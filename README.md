@@ -1,117 +1,74 @@
-# 📊 Análise de Emissões de Gases de Efeito Estufa por Estado (1970–2021)
-Este projeto tem como objetivo realizar uma análise exploratória dos dados de emissões de gases de efeito estufa (GEE) no Brasil, por estado, no período de 1970 a 2021, utilizando a linguagem Python e bibliotecas como pandas e matplotlib.
+# 🌍 Análise de Emissões de Gases de Efeito Estufa no Brasil (1970–2021)
+Este projeto tem como objetivo analisar as emissões de gases de efeito estufa (GEE) por estado brasileiro, com base nos dados oficiais do inventário nacional. A análise cobre o período de 1970 a 2021 e busca responder perguntas como:
 
-🧩 Estrutura dos Dados
-Os dados foram extraídos do arquivo Emissões.xlsx, mais especificamente da planilha "GEE Estados", que contém informações sobre:
+Quais são os gases mais emitidos?
 
-Estados brasileiros
+Quais setores econômicos mais poluem?
 
-Tipos de emissão (emissão, remoção, bunker)
+Como as emissões evoluíram ao longo dos anos?
 
-Setores econômicos
+📄 Fonte dos Dados
+Utilizamos um arquivo Excel contendo diversas planilhas. Neste projeto, selecionamos apenas a aba "GEE Estados", pois ela reúne as informações de emissões estaduais.
 
-Tipos de gás
+🧹 Limpeza e Filtragem de Dados
+Para garantir que os dados analisados fossem realmente representativos das emissões reais dos estados brasileiros, removemos:
 
-Emissões por ano (1970 a 2021)
+Remoções: registros de retirada de gases da atmosfera, que são o oposto da emissão.
 
-⚙️ Passos da Análise
-1. Leitura dos Dados
-python
-Copiar
-Editar
-emissoes_gases = pd.read_excel('Emissões.xlsx', sheet_name='GEE Estados')
-2. Inspeção Inicial
-python
-Copiar
-Editar
-emissoes_gases.info()
-🧹 Limpeza e Filtragem dos Dados
-Removemos os seguintes registros:
+NCI (Não Contemplados): dados que não fazem parte do inventário oficial.
 
-Remoções: representam retirada de gases da atmosfera.
+Bunkers: emissões de transporte marítimo e aéreo internacional, que não pertencem a nenhum estado específico.
 
-NCI: não estão contemplados no inventário nacional.
+Após essa filtragem, mantivemos somente os dados classificados como "Emissão".
 
-Bunkers: emissões internacionais (não atribuídas a estados).
+🔁 Transformação da Base de Dados
+A estrutura original da planilha traz os anos como colunas. Para facilitar a análise e visualização dos dados, reorganizamos a tabela de modo que:
 
-python
-Copiar
-Editar
-emissoes_gases = emissoes_gases[emissoes_gases['Emissão / Remoção / Bunker'] == 'Emissão']
-🔄 Transformação dos Dados
-A base original possui colunas de anos (1970–2021). Para facilitar a análise, usamos melt() para transformá-las em uma coluna única chamada Ano.
+Os anos passaram a ocupar uma única coluna.
 
-python
-Copiar
-Editar
-emissao_por_ano = emissoes_gases.melt(
-    id_vars=colunas_info,
-    value_vars=colunas_emissao,
-    var_name='Ano',
-    value_name='Emissão'
-)
-📊 Análises Realizadas
-🔹 Emissão total por tipo de gás
-python
-Copiar
-Editar
-emissao_por_gás = emissao_por_ano.groupby('Gás')[['Emissão']].sum().sort_values('Emissão', ascending=False)
-🔹 Visualização (Top 9 gases)
-python
-Copiar
-Editar
-emissao_por_gás.iloc[0:9].plot(kind='barh', figsize=(10,6));
-🔹 Porcentagem de CO₂ em relação ao total
-python
-Copiar
-Editar
-porcentagem_co2 = (emissao_por_gás.iloc[0:9].sum().sum() / emissao_por_gás.sum().sum()) * 100
-🔍 Análise por Setor
-🔸 Gases mais emitidos por setor
-python
-Copiar
-Editar
-gas_por_setor.groupby(level=1).idxmax()
-🔸 Setores mais emissores por tipo de gás
-python
-Copiar
-Editar
-gas_por_setor.groupby(level=0).idxmax()
-Essas análises geram duas tabelas sumarizadas:
+As emissões passaram a ser valores em uma outra coluna.
 
-tabela_sumarizada.csv
+Essa transformação permite agrupar, comparar e visualizar tendências com muito mais facilidade.
 
-tabela_sumarizada2.csv
+📊 Principais Análises
+1. Gases mais emitidos no Brasil
+Identificamos os gases de efeito estufa mais presentes nas emissões totais. O gás CO₂ se destacou como o mais poluente, representando mais de 70% das emissões.
 
-📅 Tendência Temporal
-A evolução da emissão ao longo dos anos pode ser visualizada por meio de agrupamentos por ano ou por setor específico em determinado ano (ex: 2021).
+2. Setores mais poluentes
+Agrupamos os dados por setores econômicos para entender qual atividade emite mais GEE. Os principais setores emissores incluem:
 
-python
-Copiar
-Editar
-emissao_por_ano[emissao_por_ano['Ano']==2021].groupby('Nível 1 - Setor')[['Emissão']].sum()
-💾 Exportação de Resultados
-Todos os resultados relevantes foram exportados para .csv:
+Agropecuária
 
-emissao_por_ano.csv
+Energia
 
-tabela_sumarizada.csv
+Mudança de Uso da Terra e Floresta
 
-tabela_sumarizada2.csv
+3. Cruzamento entre gases e setores
+Também cruzamos informações para saber:
 
-📚 Requisitos
-Python 3.7+
+Qual setor emite mais para cada tipo de gás.
 
-pandas
+Qual gás é mais emitido por cada setor.
 
-matplotlib (para gráficos)
+Esses cruzamentos foram organizados em tabelas sumarizadas para facilitar a interpretação.
 
-Instalação com pip:
+📈 Evolução ao Longo dos Anos
+Através de visualizações, conseguimos observar se as emissões aumentaram ou diminuíram com o passar do tempo, permitindo entender o impacto de políticas públicas, mudanças no uso do solo e industrialização.
 
-bash
-Copiar
-Editar
-pip install pandas matplotlib
-✍️ Autor
-Este projeto foi desenvolvido com fins didáticos para analisar dados ambientais e auxiliar a tomada de decisão baseada em evidências.
+📁 Arquivos Gerados
+emissao_por_ano.csv: Base tratada com as emissões organizadas por ano.
+
+tabela_sumarizada.csv: Tabela com os setores que mais emitem cada tipo de gás.
+
+tabela_sumarizada2.csv: Tabela com os gases mais emitidos em cada setor.
+
+🚀 Próximos Passos
+Criar visualizações interativas para explorar os dados.
+
+Comparar os estados entre si.
+
+Avaliar políticas públicas com base nos dados de emissão.
+
+🧠 Conclusão
+Esta análise é essencial para entender o impacto das atividades humanas nas mudanças climáticas. Compreender as fontes e tipos de emissão permite direcionar ações de mitigação de forma mais eficiente e estratégica.
 
